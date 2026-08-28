@@ -13,20 +13,20 @@
     <div class="w-full max-w-lg relative z-10 space-y-6">
 
         {{-- Header --}}
-        <div class="text-center space-y-3">
-            <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-950 to-indigo-950 border border-blue-500/30 text-cyan-400 text-2xl shadow-xl mx-auto">
+        <div class="text-center space-y-4">
+            <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-950 via-indigo-950 to-purple-950 border border-blue-500/40 text-cyan-400 text-3xl shadow-2xl shadow-blue-500/20 mx-auto mb-3">
                 <i class="bi bi-geo-alt-fill"></i>
             </div>
-            <div>
-                <h1 class="text-2xl font-extrabold text-white tracking-tight">Track Your Order</h1>
-                <p class="text-sm text-gray-400 mt-1.5">Enter your order details below to view real-time delivery status</p>
+            <div class="space-y-2">
+                <h1 class="text-3xl font-extrabold text-white tracking-tight">Track Your Order</h1>
+                <p class="text-sm text-gray-400 max-w-sm mx-auto leading-relaxed mt-2">Enter your order details below to view real-time delivery status</p>
             </div>
         </div>
 
         {{-- Errors / Info --}}
         @if ($errors->any())
             <div class="alert alert-error animate-slide-in-up">
-                <i class="alert-icon bi bi-exclamation-circle-fill text-lg"></i>
+                <i class="alert-icon bi bi-exclamation-circle-fill text-lg mr-2"></i>
                 <div class="space-y-1">
                     @foreach ($errors->all() as $error)
                         <p class="text-xs">{{ $error }}</p>
@@ -38,45 +38,45 @@
         {{-- Lookup Card --}}
         <div class="glass-panel p-8 space-y-6">
 
-            <form action="{{ route('orders.lookup.post') }}" method="POST" id="lookupForm" class="space-y-5">
+            <form action="{{ route('orders.lookup.post') }}" method="POST" id="lookupForm" class="space-y-6">
                 @csrf
 
-                <div class="form-group">
+                <div class="form-group space-y-2">
                     <label for="order_number" class="form-label font-semibold text-gray-300">Order Number</label>
                     <div class="relative">
-                        <span class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 text-sm">
+                        <span class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 text-base">
                             <i class="bi bi-hash text-cyan-400"></i>
                         </span>
                         <input id="order_number" name="order_number" type="text"
                             value="{{ old('order_number') }}"
                             placeholder="SE-ORD-XXXXXX"
                             required
-                            class="input-dark pl-11 font-mono tracking-wider uppercase {{ $errors->has('order_number') ? 'border-rose-500/70' : '' }}"
+                            class="input-dark pl-12 py-3 font-mono tracking-wider uppercase {{ $errors->has('order_number') ? 'border-rose-500/70' : '' }}"
                             oninput="this.value = this.value.toUpperCase()">
                     </div>
-                    <p class="text-[11px] text-gray-500 mt-1.5 flex items-center gap-1">
-                        <i class="bi bi-info-circle text-gray-500"></i> Format: SE-ORD-XXXXXX (from your confirmation email)
+                    <p class="text-[11px] text-gray-500 mt-2 flex items-center gap-1.5">
+                        <i class="bi bi-info-circle text-gray-400 text-xs"></i> <span>Format: SE-ORD-XXXXXX (from your confirmation email)</span>
                     </p>
                 </div>
 
-                <div class="form-group">
+                <div class="form-group space-y-2">
                     <label for="customer_email" class="form-label font-semibold text-gray-300">Email Address</label>
                     <div class="relative">
-                        <span class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 text-sm">
+                        <span class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 text-base">
                             <i class="bi bi-envelope text-cyan-400"></i>
                         </span>
                         <input id="customer_email" name="customer_email" type="email"
                             value="{{ old('customer_email') }}"
                             placeholder="Email used when placing the order"
                             required
-                            class="input-dark pl-11 {{ $errors->has('customer_email') ? 'border-rose-500/70' : '' }}">
+                            class="input-dark pl-12 py-3 {{ $errors->has('customer_email') ? 'border-rose-500/70' : '' }}">
                     </div>
                 </div>
 
-                <button type="submit" id="trackBtn" class="btn btn-primary btn-full btn-lg inline-flex items-center justify-center gap-2.5 group">
-                    <i class="bi bi-search text-base"></i>
-                    <span id="trackBtnText" class="font-bold">Track My Order</span>
-                    <i class="bi bi-arrow-right text-base group-hover:translate-x-1 transition-transform ml-1" id="trackBtnIcon"></i>
+                <button type="submit" id="trackBtn" class="btn btn-primary btn-full btn-lg inline-flex items-center justify-center gap-3.5 group py-3.5 px-6 shadow-xl shadow-cyan-500/20">
+                    <i class="bi bi-geo-alt-fill text-lg"></i>
+                    <span id="trackBtnText" class="font-bold tracking-wide">Track My Order</span>
+                    <i class="bi bi-arrow-right text-lg group-hover:translate-x-1.5 transition-transform" id="trackBtnIcon"></i>
                     <span id="trackBtnSpinner" class="spinner hidden"></span>
                 </button>
             </form>
