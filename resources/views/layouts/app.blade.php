@@ -232,10 +232,10 @@
                 <div>
                     <h3 class="text-white font-bold mb-4 uppercase text-xs tracking-wider">Customer Care</h3>
                     <ul class="space-y-2 text-xs">
-                        <li><a href="{{ route('orders.lookup') }}" class="hover:text-cyan-400 transition-colors">Order Status & Tracking</a></li>
-                        <li><a href="#" class="hover:text-cyan-400 transition-colors">Shipping & Delivery Policy</a></li>
-                        <li><a href="#" class="hover:text-cyan-400 transition-colors">Returns & 2-Year Warranty</a></li>
-                        <li><a href="{{ route('admin.dashboard') }}" class="hover:text-cyan-400 transition-colors">Merchant Portal</a></li>
+                        <li><a href="{{ route('orders.lookup') }}" class="hover:text-cyan-400 transition-colors flex items-center gap-1.5"><i class="bi bi-geo-alt text-cyan-400"></i> Order Status & Tracking</a></li>
+                        <li><a href="{{ route('shipping') }}" class="hover:text-cyan-400 transition-colors flex items-center gap-1.5"><i class="bi bi-truck text-cyan-400"></i> Shipping & Delivery Policy</a></li>
+                        <li><a href="{{ route('returns') }}" class="hover:text-cyan-400 transition-colors flex items-center gap-1.5"><i class="bi bi-shield-check text-emerald-400"></i> Returns & 2-Year Warranty</a></li>
+                        <li><a href="{{ route('admin.dashboard') }}" class="hover:text-cyan-400 transition-colors flex items-center gap-1.5"><i class="bi bi-speedometer2 text-indigo-400"></i> Merchant Portal</a></li>
                     </ul>
                 </div>
 

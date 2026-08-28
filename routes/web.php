@@ -23,6 +23,8 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::view('/privacy', 'pages.privacy')->name('privacy');
 Route::view('/terms', 'pages.terms')->name('terms');
 Route::view('/security', 'pages.security')->name('security');
+Route::view('/shipping', 'pages.shipping')->name('shipping');
+Route::view('/returns', 'pages.returns')->name('returns');
 
 
 // Authentication Routes (guest middleware on GET forms)
