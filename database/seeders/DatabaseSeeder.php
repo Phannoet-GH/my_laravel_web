@@ -824,5 +824,238 @@ class DatabaseSeeder extends Seeder
                 ]
             );
         }
+
+        // --- 5 NEW CUSTOMERS & THEIR ORDERS ---
+
+        // Customer 1: Sophia Chen
+        $c1 = User::updateOrCreate(
+            ['email' => 'sophia.chen@devstudio.io'],
+            [
+                'name' => 'Sophia Chen',
+                'password' => Hash::make('user123'),
+                'role' => 'customer',
+                'phone' => '+1 (415) 890-1234',
+            ]
+        );
+        $o1 = Order::updateOrCreate(
+            ['order_number' => 'SE-ORD-901823'],
+            [
+                'user_id' => $c1->id,
+                'customer_name' => 'Sophia Chen',
+                'customer_email' => 'sophia.chen@devstudio.io',
+                'customer_phone' => '+1 (415) 890-1234',
+                'shipping_address' => '101 Tech Campus Way, Suite 400',
+                'city' => 'San Jose',
+                'postal_code' => '95110',
+                'subtotal_amount' => 2459.98,
+                'discount_amount' => 246.00,
+                'coupon_code' => 'WELCOME10',
+                'tax_amount' => 110.70,
+                'total_amount' => 2324.68,
+                'payment_method' => 'card',
+                'status' => 'processing',
+                'tracking_code' => 'TRK-SE-901823',
+            ]
+        );
+        if ($p1) {
+            OrderItem::updateOrCreate(['order_id' => $o1->id, 'product_id' => $p1->id], [
+                'product_name' => $p1->name, 'unit_price' => 2299.99, 'quantity' => 1, 'subtotal' => 2299.99
+            ]);
+        }
+        if ($p2) {
+            OrderItem::updateOrCreate(['order_id' => $o1->id, 'product_id' => $p2->id], [
+                'product_name' => $p2->name, 'unit_price' => 159.99, 'quantity' => 1, 'subtotal' => 159.99
+            ]);
+        }
+
+        // Customer 2: Marcus Vance
+        $c2 = User::updateOrCreate(
+            ['email' => 'marcus.vance@cloudnative.com'],
+            [
+                'name' => 'Marcus Vance',
+                'password' => Hash::make('user123'),
+                'role' => 'customer',
+                'phone' => '+1 (206) 555-7890',
+            ]
+        );
+        $pDisp = Product::where('slug', 'horizon-curve-49-ultrawide-oled-monitor')->first();
+        $pLight = Product::where('slug', 'luminalight-pro-monitor-light-bar')->first();
+        $pArm = Product::where('slug', 'flexiarm-heavyduty-dual-monitor-mount')->first();
+        $o2 = Order::updateOrCreate(
+            ['order_number' => 'SE-ORD-772104'],
+            [
+                'user_id' => $c2->id,
+                'customer_name' => 'Marcus Vance',
+                'customer_email' => 'marcus.vance@cloudnative.com',
+                'customer_phone' => '+1 (206) 555-7890',
+                'shipping_address' => '500 Pike Street, Apt 12B',
+                'city' => 'Seattle',
+                'postal_code' => '98101',
+                'subtotal_amount' => 1379.97,
+                'discount_amount' => 0.00,
+                'coupon_code' => null,
+                'tax_amount' => 69.00,
+                'total_amount' => 1448.97,
+                'payment_method' => 'paypal',
+                'status' => 'shipped',
+                'tracking_code' => 'TRK-SE-772104',
+            ]
+        );
+        if ($pDisp) {
+            OrderItem::updateOrCreate(['order_id' => $o2->id, 'product_id' => $pDisp->id], [
+                'product_name' => $pDisp->name, 'unit_price' => 1149.99, 'quantity' => 1, 'subtotal' => 1149.99
+            ]);
+        }
+        if ($pLight) {
+            OrderItem::updateOrCreate(['order_id' => $o2->id, 'product_id' => $pLight->id], [
+                'product_name' => $pLight->name, 'unit_price' => 99.99, 'quantity' => 1, 'subtotal' => 99.99
+            ]);
+        }
+        if ($pArm) {
+            OrderItem::updateOrCreate(['order_id' => $o2->id, 'product_id' => $pArm->id], [
+                'product_name' => $pArm->name, 'unit_price' => 129.99, 'quantity' => 1, 'subtotal' => 129.99
+            ]);
+        }
+
+        // Customer 3: Elena Rostova
+        $c3 = User::updateOrCreate(
+            ['email' => 'elena.rostova@ai-research.org'],
+            [
+                'name' => 'Elena Rostova',
+                'password' => Hash::make('user123'),
+                'role' => 'customer',
+                'phone' => '+1 (512) 444-9988',
+            ]
+        );
+        $pTitan = Product::where('slug', 'se-titanstation-max-studio-18')->first();
+        $pDeck = Product::where('slug', 'se-devdeck-pocket-ai-mini-workstation')->first();
+        $o3 = Order::updateOrCreate(
+            ['order_number' => 'SE-ORD-554219'],
+            [
+                'user_id' => $c3->id,
+                'customer_name' => 'Elena Rostova',
+                'customer_email' => 'elena.rostova@ai-research.org',
+                'customer_phone' => '+1 (512) 444-9988',
+                'shipping_address' => '800 Congress Avenue, Floor 14',
+                'city' => 'Austin',
+                'postal_code' => '78701',
+                'subtotal_amount' => 4999.97,
+                'discount_amount' => 500.00,
+                'coupon_code' => 'SAVE20',
+                'tax_amount' => 225.00,
+                'total_amount' => 4724.97,
+                'payment_method' => 'card',
+                'status' => 'delivered',
+                'tracking_code' => 'TRK-SE-554219',
+            ]
+        );
+        if ($pTitan) {
+            OrderItem::updateOrCreate(['order_id' => $o3->id, 'product_id' => $pTitan->id], [
+                'product_name' => $pTitan->name, 'unit_price' => 3599.99, 'quantity' => 1, 'subtotal' => 3599.99
+            ]);
+        }
+        if ($pDeck) {
+            OrderItem::updateOrCreate(['order_id' => $o3->id, 'product_id' => $pDeck->id], [
+                'product_name' => $pDeck->name, 'unit_price' => 699.99, 'quantity' => 2, 'subtotal' => 1399.98
+            ]);
+        }
+
+        // Customer 4: Liam O'Connor
+        $c4 = User::updateOrCreate(
+            ['email' => 'liam.oconnor@soundforge.app'],
+            [
+                'name' => "Liam O'Connor",
+                'password' => Hash::make('user123'),
+                'role' => 'customer',
+                'phone' => '+1 (617) 333-2211',
+            ]
+        );
+        $pMic = Product::where('slug', 'se-studiomic-pro-xlr-condenser')->first();
+        $pSpk = Product::where('slug', 'se-wavemonitor-active-nearfield-speakers')->first();
+        $pDac = Product::where('slug', 'audiodeck-usbc-highres-dac-amp')->first();
+        $o4 = Order::updateOrCreate(
+            ['order_number' => 'SE-ORD-663810'],
+            [
+                'user_id' => $c4->id,
+                'customer_name' => "Liam O'Connor",
+                'customer_email' => 'liam.oconnor@soundforge.app',
+                'customer_phone' => '+1 (617) 333-2211',
+                'shipping_address' => '250 Newbury Street',
+                'city' => 'Boston',
+                'postal_code' => '02116',
+                'subtotal_amount' => 839.97,
+                'discount_amount' => 0.00,
+                'coupon_code' => null,
+                'tax_amount' => 42.00,
+                'total_amount' => 881.97,
+                'payment_method' => 'card',
+                'status' => 'delivered',
+                'tracking_code' => 'TRK-SE-663810',
+            ]
+        );
+        if ($pMic) {
+            OrderItem::updateOrCreate(['order_id' => $o4->id, 'product_id' => $pMic->id], [
+                'product_name' => $pMic->name, 'unit_price' => 219.99, 'quantity' => 1, 'subtotal' => 219.99
+            ]);
+        }
+        if ($pSpk) {
+            OrderItem::updateOrCreate(['order_id' => $o4->id, 'product_id' => $pSpk->id], [
+                'product_name' => $pSpk->name, 'unit_price' => 449.99, 'quantity' => 1, 'subtotal' => 449.99
+            ]);
+        }
+        if ($pDac) {
+            OrderItem::updateOrCreate(['order_id' => $o4->id, 'product_id' => $pDac->id], [
+                'product_name' => $pDac->name, 'unit_price' => 169.99, 'quantity' => 1, 'subtotal' => 169.99
+            ]);
+        }
+
+        // Customer 5: Aaliyah Patel
+        $c5 = User::updateOrCreate(
+            ['email' => 'aaliyah.patel@biotech-innovations.com'],
+            [
+                'name' => 'Aaliyah Patel',
+                'password' => Hash::make('user123'),
+                'role' => 'customer',
+                'phone' => '+1 (312) 777-6655',
+            ]
+        );
+        $pRing = Product::where('slug', 'neuralring-gen3-bio-recovery-tracker')->first();
+        $pWatch = Product::where('slug', 'se-pulse-pro-smartwatch-ultra')->first();
+        $pAir = Product::where('slug', 'se-airsense-desktop-air-quality-monitor')->first();
+        $o5 = Order::updateOrCreate(
+            ['order_number' => 'SE-ORD-449105'],
+            [
+                'user_id' => $c5->id,
+                'customer_name' => 'Aaliyah Patel',
+                'customer_email' => 'aaliyah.patel@biotech-innovations.com',
+                'customer_phone' => '+1 (312) 777-6655',
+                'shipping_address' => '120 North LaSalle Street, Suite 900',
+                'city' => 'Chicago',
+                'postal_code' => '60602',
+                'subtotal_amount' => 789.97,
+                'discount_amount' => 0.00,
+                'coupon_code' => null,
+                'tax_amount' => 39.50,
+                'total_amount' => 829.47,
+                'payment_method' => 'bank_transfer',
+                'status' => 'pending',
+                'tracking_code' => 'TRK-SE-449105',
+            ]
+        );
+        if ($pRing) {
+            OrderItem::updateOrCreate(['order_id' => $o5->id, 'product_id' => $pRing->id], [
+                'product_name' => $pRing->name, 'unit_price' => 259.99, 'quantity' => 1, 'subtotal' => 259.99
+            ]);
+        }
+        if ($pWatch) {
+            OrderItem::updateOrCreate(['order_id' => $o5->id, 'product_id' => $pWatch->id], [
+                'product_name' => $pWatch->name, 'unit_price' => 389.99, 'quantity' => 1, 'subtotal' => 389.99
+            ]);
+        }
+        if ($pAir) {
+            OrderItem::updateOrCreate(['order_id' => $o5->id, 'product_id' => $pAir->id], [
+                'product_name' => $pAir->name, 'unit_price' => 139.99, 'quantity' => 1, 'subtotal' => 139.99
+            ]);
+        }
     }
 }
