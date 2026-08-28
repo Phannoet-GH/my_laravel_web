@@ -12,22 +12,22 @@
 
         
         <div class="text-center space-y-3">
-            <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-950 to-indigo-950 border border-blue-500/30 text-cyan-400 text-2xl shadow-xl">
+            <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-950 to-indigo-950 border border-blue-500/30 text-cyan-400 text-2xl shadow-xl mx-auto">
                 <i class="bi bi-geo-alt-fill"></i>
             </div>
             <div>
-                <h1 class="text-2xl font-extrabold text-white">Track Your Order</h1>
-                <p class="text-sm text-gray-400 mt-1">Enter your order details to see real-time delivery status</p>
+                <h1 class="text-2xl font-extrabold text-white tracking-tight">Track Your Order</h1>
+                <p class="text-sm text-gray-400 mt-1.5">Enter your order details below to view real-time delivery status</p>
             </div>
         </div>
 
         
         <?php if($errors->any()): ?>
             <div class="alert alert-error animate-slide-in-up">
-                <i class="alert-icon bi bi-exclamation-circle-fill"></i>
-                <div>
+                <i class="alert-icon bi bi-exclamation-circle-fill text-lg"></i>
+                <div class="space-y-1">
                     <?php $__currentLoopData = $errors->all(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $error): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                        <p><?php echo e($error); ?></p>
+                        <p class="text-xs"><?php echo e($error); ?></p>
                     <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                 </div>
             </div>
@@ -40,38 +40,41 @@
                 <?php echo csrf_field(); ?>
 
                 <div class="form-group">
-                    <label for="order_number" class="form-label">Order Number</label>
+                    <label for="order_number" class="form-label font-semibold text-gray-300">Order Number</label>
                     <div class="relative">
-                        <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-500 text-sm">
-                            <i class="bi bi-hash"></i>
+                        <span class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 text-sm">
+                            <i class="bi bi-hash text-cyan-400"></i>
                         </span>
                         <input id="order_number" name="order_number" type="text"
                             value="<?php echo e(old('order_number')); ?>"
                             placeholder="SE-ORD-XXXXXX"
                             required
-                            class="input-dark pl-10 font-mono tracking-wider uppercase <?php echo e($errors->has('order_number') ? 'border-rose-500/70' : ''); ?>"
+                            class="input-dark pl-11 font-mono tracking-wider uppercase <?php echo e($errors->has('order_number') ? 'border-rose-500/70' : ''); ?>"
                             oninput="this.value = this.value.toUpperCase()">
                     </div>
-                    <p class="text-[10px] text-gray-500 mt-1">Format: SE-ORD-XXXXXX (from your confirmation email)</p>
+                    <p class="text-[11px] text-gray-500 mt-1.5 flex items-center gap-1">
+                        <i class="bi bi-info-circle text-gray-500"></i> Format: SE-ORD-XXXXXX (from your confirmation email)
+                    </p>
                 </div>
 
                 <div class="form-group">
-                    <label for="customer_email" class="form-label">Email Address</label>
+                    <label for="customer_email" class="form-label font-semibold text-gray-300">Email Address</label>
                     <div class="relative">
-                        <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-500 text-sm">
-                            <i class="bi bi-envelope"></i>
+                        <span class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 text-sm">
+                            <i class="bi bi-envelope text-cyan-400"></i>
                         </span>
                         <input id="customer_email" name="customer_email" type="email"
                             value="<?php echo e(old('customer_email')); ?>"
                             placeholder="Email used when placing the order"
                             required
-                            class="input-dark pl-10 <?php echo e($errors->has('customer_email') ? 'border-rose-500/70' : ''); ?>">
+                            class="input-dark pl-11 <?php echo e($errors->has('customer_email') ? 'border-rose-500/70' : ''); ?>">
                     </div>
                 </div>
 
-                <button type="submit" id="trackBtn" class="btn btn-primary btn-full btn-lg gap-2 group">
-                    <span id="trackBtnText">Track My Order</span>
-                    <i class="bi bi-arrow-right group-hover:translate-x-1 transition-transform" id="trackBtnIcon"></i>
+                <button type="submit" id="trackBtn" class="btn btn-primary btn-full btn-lg inline-flex items-center justify-center gap-2.5 group">
+                    <i class="bi bi-search text-base"></i>
+                    <span id="trackBtnText" class="font-bold">Track My Order</span>
+                    <i class="bi bi-arrow-right text-base group-hover:translate-x-1 transition-transform ml-1" id="trackBtnIcon"></i>
                     <span id="trackBtnSpinner" class="spinner hidden"></span>
                 </button>
             </form>
