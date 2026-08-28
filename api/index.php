@@ -46,7 +46,29 @@ if (!getenv('APP_KEY') && empty($_ENV['APP_KEY'])) {
     $_SERVER['APP_KEY'] = $fallbackKey;
 }
 
-// 3. Bootstrap Laravel
+// 3. Smart Database Fallback for Vercel Serverless
+$dbConn = getenv('DB_CONNECTION') ?: ($_ENV['DB_CONNECTION'] ?? 'mysql');
+$dbHost = getenv('DB_HOST') ?: ($_ENV['DB_HOST'] ?? '127.0.0.1');
+
+if ($dbConn === 'mysql' && ($dbHost === '127.0.0.1' || $dbHost === 'localhost')) {
+    $tmpDb = '/tmp/database.sqlite';
+    if (!file_exists($tmpDb)) {
+        $sourceDb = __DIR__ . '/../database/seed_database.sqlite';
+        if (file_exists($sourceDb)) {
+            copy($sourceDb, $tmpDb);
+        } else {
+            touch($tmpDb);
+        }
+    }
+    putenv('DB_CONNECTION=sqlite');
+    putenv("DB_DATABASE={$tmpDb}");
+    $_ENV['DB_CONNECTION'] = 'sqlite';
+    $_ENV['DB_DATABASE'] = $tmpDb;
+    $_SERVER['DB_CONNECTION'] = 'sqlite';
+    $_SERVER['DB_DATABASE'] = $tmpDb;
+}
+
+// 4. Bootstrap Laravel
 define('LARAVEL_START', microtime(true));
 
 require __DIR__ . '/../vendor/autoload.php';
