@@ -100,8 +100,9 @@
                 <h2 class="text-lg font-extrabold text-white flex items-center gap-2">
                     <i class="bi bi-box-seam text-cyan-400"></i> Order History
                 </h2>
-                <a href="<?php echo e(route('orders.lookup')); ?>" class="text-xs text-gray-400 hover:text-cyan-400 flex items-center gap-1.5 transition-colors">
-                    <i class="bi bi-search"></i> Track Order
+                <a href="<?php echo e(route('orders.lookup')); ?>" class="text-xs text-gray-400 hover:text-cyan-400 inline-flex items-center gap-2 transition-colors">
+                    <i class="bi bi-geo-alt text-cyan-400"></i>
+                    <span>Track Order</span>
                 </a>
             </div>
 

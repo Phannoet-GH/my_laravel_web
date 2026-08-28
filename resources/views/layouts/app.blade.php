@@ -52,7 +52,10 @@
                         <a href="{{ route('shop.index') }}" class="text-gray-300 hover:text-cyan-400 transition-colors {{ request()->routeIs('shop.index') ? 'text-cyan-400 font-bold' : '' }}">Catalog</a>
                         <a href="{{ route('shop.index', ['category' => 'laptops-workstations']) }}" class="text-gray-300 hover:text-cyan-400 transition-colors">Laptops</a>
                         <a href="{{ route('shop.index', ['category' => 'smart-peripherals']) }}" class="text-gray-300 hover:text-cyan-400 transition-colors">Keyboards & Mice</a>
-                        <a href="{{ route('orders.lookup') }}" class="text-gray-400 hover:text-gray-200 transition-colors">Track Order</a>
+                        <a href="{{ route('orders.lookup') }}" class="text-gray-300 hover:text-cyan-400 transition-colors inline-flex items-center gap-2 {{ request()->routeIs('orders.lookup') ? 'text-cyan-400 font-bold' : '' }}">
+                            <i class="bi bi-geo-alt text-cyan-400 text-sm"></i>
+                            <span>Track Order</span>
+                        </a>
                     </nav>
                 </div>
 
