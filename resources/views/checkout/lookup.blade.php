@@ -43,15 +43,16 @@
 
                 <div class="form-group space-y-2">
                     <label for="order_number" class="form-label font-semibold text-gray-300">Order Number</label>
-                    <div class="relative">
-                        <span class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 text-base">
-                            <i class="bi bi-hash text-cyan-400"></i>
+                    <div class="input-icon-group">
+                        <span class="input-icon-left">
+                            <i class="bi bi-hash text-cyan-400 text-lg"></i>
                         </span>
                         <input id="order_number" name="order_number" type="text"
                             value="{{ old('order_number') }}"
                             placeholder="SE-ORD-XXXXXX"
                             required
-                            class="input-dark pl-12 py-3 font-mono tracking-wider uppercase {{ $errors->has('order_number') ? 'border-rose-500/70' : '' }}"
+                            style="padding-left: 3.5rem !important;"
+                            class="input-dark py-3.5 font-mono tracking-wider uppercase {{ $errors->has('order_number') ? 'border-rose-500/70' : '' }}"
                             oninput="this.value = this.value.toUpperCase()">
                     </div>
                     <p class="text-[11px] text-gray-500 mt-2 flex items-center gap-1.5">
@@ -61,15 +62,16 @@
 
                 <div class="form-group space-y-2">
                     <label for="customer_email" class="form-label font-semibold text-gray-300">Email Address</label>
-                    <div class="relative">
-                        <span class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 text-base">
-                            <i class="bi bi-envelope text-cyan-400"></i>
+                    <div class="input-icon-group">
+                        <span class="input-icon-left">
+                            <i class="bi bi-envelope text-cyan-400 text-lg"></i>
                         </span>
                         <input id="customer_email" name="customer_email" type="email"
                             value="{{ old('customer_email') }}"
                             placeholder="Email used when placing the order"
                             required
-                            class="input-dark pl-12 py-3 {{ $errors->has('customer_email') ? 'border-rose-500/70' : '' }}">
+                            style="padding-left: 3.5rem !important;"
+                            class="input-dark py-3.5 {{ $errors->has('customer_email') ? 'border-rose-500/70' : '' }}">
                     </div>
                 </div>
 
