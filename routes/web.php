@@ -32,17 +32,17 @@ Route::middleware('guest')->group(function () {
     Route::get('/register', [AuthController::class, 'showRegisterForm'])->name('register');
     Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
 });
-Route::post('/register', [AuthController::class, 'register']);
-Route::post('/login', [AuthController::class, 'login']);
+Route::post('/register', [AuthController::class, 'register'])->middleware('throttle:auth');
+Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:auth');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 // Customer Dashboard & Checkout Routes (Protected - Require Authentication)
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [CustomerDashboardController::class, 'index'])->name('dashboard');
     Route::put('/profile/update', [CustomerDashboardController::class, 'updateProfile'])->name('profile.update');
-    Route::put('/profile/password', [CustomerDashboardController::class, 'updatePassword'])->name('profile.password');
+    Route::put('/profile/password', [CustomerDashboardController::class, 'updatePassword'])->middleware('throttle:auth')->name('profile.password');
     Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
-    Route::post('/checkout/process', [CheckoutController::class, 'process'])->name('checkout.process');
+    Route::post('/checkout/process', [CheckoutController::class, 'process'])->middleware('throttle:orders')->name('checkout.process');
     Route::get('/order/{orderNumber}/invoice', [OrderController::class, 'invoice'])->name('orders.invoice');
     Route::post('/order/{orderNumber}/cancel', [OrderController::class, 'cancel'])->name('orders.cancel');
 });
@@ -50,21 +50,21 @@ Route::middleware('auth')->group(function () {
 // Shop & Product Routes
 Route::get('/shop', [ProductController::class, 'index'])->name('shop.index');
 Route::get('/product/{slug}', [ProductController::class, 'show'])->name('shop.show');
-Route::post('/product/{id}/review', [ProductController::class, 'storeReview'])->name('products.review');
+Route::post('/product/{id}/review', [ProductController::class, 'storeReview'])->middleware('throttle:reviews')->name('products.review');
 
 // Cart Routes
 Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
-Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
-Route::post('/cart/update', [CartController::class, 'update'])->name('cart.update');
-Route::post('/cart/remove', [CartController::class, 'remove'])->name('cart.remove');
+Route::post('/cart/add', [CartController::class, 'add'])->middleware('throttle:cart')->name('cart.add');
+Route::post('/cart/update', [CartController::class, 'update'])->middleware('throttle:cart')->name('cart.update');
+Route::post('/cart/remove', [CartController::class, 'remove'])->middleware('throttle:cart')->name('cart.remove');
 Route::post('/cart/coupon/apply', [CartController::class, 'applyCoupon'])->name('cart.coupon.apply');
-Route::get('/cart/coupon/remove', [CartController::class, 'removeCoupon'])->name('cart.coupon.remove');
-Route::get('/cart/clear', [CartController::class, 'clear'])->name('cart.clear');
+Route::match(['get', 'post'], '/cart/coupon/remove', [CartController::class, 'removeCoupon'])->name('cart.coupon.remove');
+Route::match(['get', 'post'], '/cart/clear', [CartController::class, 'clear'])->name('cart.clear');
 Route::get('/cart/json', [CartController::class, 'getCartJson'])->name('cart.json');
 
 // Order Lookup & Tracking Routes (public — guests can lookup orders by order# + email)
 Route::get('/order/lookup', [OrderController::class, 'lookup'])->name('orders.lookup');
-Route::post('/order/lookup', [OrderController::class, 'lookup'])->name('orders.lookup.post');
+Route::post('/order/lookup', [OrderController::class, 'lookup'])->middleware('throttle:lookup')->name('orders.lookup.post');
 Route::get('/order/{orderNumber}', [OrderController::class, 'show'])->name('orders.show');
 
 // Admin Dashboard Routes (Protected by Auth & Admin Middleware)

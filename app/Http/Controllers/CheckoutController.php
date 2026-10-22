@@ -67,10 +67,10 @@ class CheckoutController extends Controller
         }
 
         $validated = $request->validate([
-            'customer_name' => 'required|string|max:255',
-            'customer_email' => 'required|email|max:255',
-            'customer_phone' => 'required|string|max:50',
-            'shipping_address' => 'required|string|max:500',
+            'customer_name' => 'required|string|max:100',
+            'customer_email' => 'required|string|email|max:255',
+            'customer_phone' => 'required|string|max:30',
+            'shipping_address' => 'required|string|max:300',
             'city' => 'required|string|max:100',
             'postal_code' => 'required|string|max:20',
             'payment_method' => 'required|in:card,paypal,apple_pay,crypto'
@@ -104,12 +104,12 @@ class CheckoutController extends Controller
             $order = Order::create([
                 'user_id' => auth()->id(),
                 'order_number' => $orderNumber,
-                'customer_name' => $validated['customer_name'],
-                'customer_email' => $validated['customer_email'],
-                'customer_phone' => $validated['customer_phone'],
-                'shipping_address' => $validated['shipping_address'],
-                'city' => $validated['city'],
-                'postal_code' => $validated['postal_code'],
+                'customer_name' => strip_tags(trim($validated['customer_name'])),
+                'customer_email' => strtolower(trim($validated['customer_email'])),
+                'customer_phone' => strip_tags(trim($validated['customer_phone'])),
+                'shipping_address' => strip_tags(trim($validated['shipping_address'])),
+                'city' => strip_tags(trim($validated['city'])),
+                'postal_code' => strip_tags(trim($validated['postal_code'])),
                 'subtotal_amount' => $subtotal,
                 'discount_amount' => $discount,
                 'coupon_code' => $couponCode,
@@ -139,12 +139,14 @@ class CheckoutController extends Controller
             // Clear session cart and coupon
             session()->forget('cart');
             session()->forget('coupon');
+            session()->put('recent_order', $order->order_number);
 
             return redirect()->route('orders.show', $order->order_number)
                 ->with('success', 'Order placed successfully! Stock updated.');
         } catch (\Exception $e) {
             DB::rollBack();
-            return back()->withInput()->with('error', 'Failed to process order: ' . $e->getMessage());
+            \Illuminate\Support\Facades\Log::error('Order checkout processing failed: ' . $e->getMessage());
+            return back()->withInput()->with('error', 'Failed to process order. Please verify your payment details and try again.');
         }
     }
 }

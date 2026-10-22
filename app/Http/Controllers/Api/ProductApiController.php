@@ -19,7 +19,7 @@ class ProductApiController extends Controller
 
         // Search filter
         if ($request->filled('q')) {
-            $search = $request->input('q');
+            $search = \Illuminate\Support\Str::substr(trim((string) $request->input('q')), 0, 100);
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
                   ->orWhere('description', 'like', "%{$search}%")
@@ -29,7 +29,7 @@ class ProductApiController extends Controller
 
         // Category filter (id or slug)
         if ($request->filled('category')) {
-            $cat = $request->input('category');
+            $cat = \Illuminate\Support\Str::substr(trim((string) $request->input('category')), 0, 100);
             $query->whereHas('category', function ($q) use ($cat) {
                 $q->where('slug', $cat)->orWhere('id', $cat);
             });
@@ -63,7 +63,8 @@ class ProductApiController extends Controller
                 break;
         }
 
-        $perPage = (int) $request->input('per_page', 12);
+        // Clamp pagination perPage to between 1 and 100 to prevent DoS memory exhaustion
+        $perPage = max(1, min(100, (int) $request->input('per_page', 12)));
         $products = $query->paginate($perPage);
 
         return response()->json([

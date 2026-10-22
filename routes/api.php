@@ -13,9 +13,9 @@ use Illuminate\Support\Facades\Route;
 |--------------------------------------------------------------------------
 */
 
-// Public Auth Routes
-Route::post('/auth/register', [AuthController::class, 'register']);
-Route::post('/auth/login', [AuthController::class, 'login']);
+// Public Auth Routes (Rate Limited to prevent credential stuffing)
+Route::post('/auth/register', [AuthController::class, 'register'])->middleware('throttle:auth');
+Route::post('/auth/login', [AuthController::class, 'login'])->middleware('throttle:auth');
 
 // Public Product & Category Routes
 Route::get('/products', [ProductApiController::class, 'index']);
@@ -23,13 +23,13 @@ Route::get('/products/{idOrSlug}', [ProductApiController::class, 'show']);
 Route::get('/categories', [CategoryApiController::class, 'index']);
 Route::get('/categories/{idOrSlug}', [CategoryApiController::class, 'show']);
 
-// Public Reviews
+// Public Reviews (Rate Limited against review spam)
 Route::get('/products/{productId}/reviews', [ReviewApiController::class, 'index']);
-Route::post('/products/{productId}/reviews', [ReviewApiController::class, 'store']);
+Route::post('/products/{productId}/reviews', [ReviewApiController::class, 'store'])->middleware('throttle:reviews');
 
-// Public Order Lookup & Guest Checkout
-Route::post('/orders/lookup', [OrderApiController::class, 'lookup']);
-Route::post('/orders/guest-checkout', [OrderApiController::class, 'store']);
+// Public Order Lookup & Guest Checkout (Rate Limited against enumeration and carding/stock locking)
+Route::post('/orders/lookup', [OrderApiController::class, 'lookup'])->middleware('throttle:lookup');
+Route::post('/orders/guest-checkout', [OrderApiController::class, 'store'])->middleware('throttle:orders');
 
 // Protected Routes (Sanctum Authentication)
 Route::middleware('auth:sanctum')->group(function () {
@@ -40,9 +40,10 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Orders Management
     Route::get('/orders', [OrderApiController::class, 'index']);
-    Route::post('/orders', [OrderApiController::class, 'store']);
+    Route::post('/orders', [OrderApiController::class, 'store'])->middleware('throttle:orders');
     Route::get('/orders/{orderNumber}', [OrderApiController::class, 'show']);
     Route::post('/orders/{orderNumber}/cancel', [OrderApiController::class, 'cancel']);
+
 
     // Admin API Routes
     Route::middleware('admin')->prefix('admin')->group(function () {

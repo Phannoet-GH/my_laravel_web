@@ -18,17 +18,17 @@ class AuthController extends Controller
     public function register(Request $request): JsonResponse
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
+            'name' => 'required|string|max:100',
             'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:6|confirmed',
-            'phone' => 'nullable|string|max:50',
+            'password' => 'required|string|min:6|max:128|confirmed',
+            'phone' => 'nullable|string|max:30',
         ]);
 
         $user = User::create([
-            'name' => $validated['name'],
-            'email' => strtolower($validated['email']),
+            'name' => strip_tags(trim($validated['name'])),
+            'email' => strtolower(trim($validated['email'])),
             'password' => Hash::make($validated['password']),
-            'phone' => $validated['phone'] ?? null,
+            'phone' => !empty($validated['phone']) ? strip_tags(trim($validated['phone'])) : null,
             'role' => 'customer',
         ]);
 
@@ -49,11 +49,11 @@ class AuthController extends Controller
     public function login(Request $request): JsonResponse
     {
         $validated = $request->validate([
-            'email' => 'required|email',
-            'password' => 'required|string',
+            'email' => 'required|string|email|max:255',
+            'password' => 'required|string|max:128',
         ]);
 
-        $user = User::where('email', strtolower($validated['email']))->first();
+        $user = User::where('email', strtolower(trim($validated['email'])))->first();
 
         if (!$user || !Hash::check($validated['password'], $user->password)) {
             return response()->json([

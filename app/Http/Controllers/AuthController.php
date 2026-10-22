@@ -19,16 +19,16 @@ class AuthController extends Controller
 
     public function register(Request $request)
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
+        $validated = $request->validate([
+            'name' => 'required|string|max:100',
             'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8|confirmed',
+            'password' => 'required|string|min:8|max:128|confirmed',
         ]);
 
         $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
+            'name' => strip_tags(trim($validated['name'])),
+            'email' => strtolower(trim($validated['email'])),
+            'password' => Hash::make($validated['password']),
             'role' => 'customer',
         ]);
 
@@ -50,11 +50,11 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         $credentials = $request->validate([
-            'email' => 'required|email',
-            'password' => 'required|string',
+            'email' => 'required|string|email|max:255',
+            'password' => 'required|string|max:128',
         ]);
 
-        if (Auth::attempt($credentials, $request->has('remember'))) {
+        if (Auth::attempt(['email' => strtolower(trim($credentials['email'])), 'password' => $credentials['password']], $request->has('remember'))) {
             $request->session()->regenerate();
 
             if (Auth::user()->isAdmin()) {

@@ -45,16 +45,14 @@ class CustomerDashboardController extends Controller
         $user = Auth::user();
 
         $validated = $request->validate([
-            'name'  => 'required|string|max:255',
+            'name'  => 'required|string|max:100',
             'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users')->ignore($user->id)],
-            'phone' => 'nullable|string|max:50',
+            'phone' => 'nullable|string|max:30',
         ]);
 
-        $user->name  = $validated['name'];
-        $user->email = $validated['email'];
-        if (!empty($validated['phone'])) {
-            $user->phone = $validated['phone'];
-        }
+        $user->name  = strip_tags(trim($validated['name']));
+        $user->email = strtolower(trim($validated['email']));
+        $user->phone = !empty($validated['phone']) ? strip_tags(trim($validated['phone'])) : null;
         $user->save();
 
         return back()->with('success', 'Profile updated successfully!');
@@ -65,8 +63,8 @@ class CustomerDashboardController extends Controller
         $user = Auth::user();
 
         $request->validate([
-            'current_password' => 'required|string',
-            'new_password'     => 'required|string|min:8|confirmed',
+            'current_password' => 'required|string|max:128',
+            'new_password'     => 'required|string|min:8|max:128|confirmed',
         ]);
 
         if (!Hash::check($request->current_password, $user->password)) {

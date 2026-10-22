@@ -53,18 +53,18 @@ class ReviewApiController extends Controller
         }
 
         $validated = $request->validate([
-            'author_name' => 'required|string|max:255',
+            'author_name' => 'required|string|max:100',
             'rating' => 'required|integer|min:1|max:5',
-            'headline' => 'required|string|max:255',
+            'headline' => 'required|string|max:150',
             'comment' => 'required|string|max:2000',
         ]);
 
         $review = Review::create([
             'product_id' => $product->id,
-            'author_name' => $validated['author_name'],
+            'author_name' => strip_tags(trim($validated['author_name'])),
             'rating' => $validated['rating'],
-            'headline' => $validated['headline'],
-            'comment' => $validated['comment'],
+            'headline' => strip_tags(trim($validated['headline'])),
+            'comment' => strip_tags(trim($validated['comment'])),
         ]);
 
         // Recalculate average rating & review count on product

@@ -50,11 +50,12 @@
                     <span class="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-2">
                         <i class="bi bi-box2 text-cyan-400"></i> Items in Your Cart ({{ count($cart) }})
                     </span>
-                    <a href="{{ route('cart.clear') }}"
-                        onclick="return confirm('Remove all items from your cart?')"
-                        class="text-xs font-semibold text-rose-400 hover:text-rose-300 flex items-center gap-1.5 transition-colors">
-                        <i class="bi bi-trash3"></i> Clear Cart
-                    </a>
+                    <form action="{{ route('cart.clear') }}" method="POST" class="inline" onsubmit="return confirm('Remove all items from your cart?')">
+                        @csrf
+                        <button type="submit" class="text-xs font-semibold text-rose-400 hover:text-rose-300 flex items-center gap-1.5 transition-colors bg-transparent border-0 cursor-pointer">
+                            <i class="bi bi-trash3"></i> Clear Cart
+                        </button>
+                    </form>
                 </div>
 
                 {{-- Item Cards List --}}
@@ -140,7 +141,10 @@
                                 <i class="bi bi-tag-fill text-emerald-400"></i>
                                 <span><span class="font-mono font-bold">{{ session('coupon.code') }}</span> — {{ session('coupon.name') }}</span>
                             </div>
-                            <a href="{{ route('cart.coupon.remove') }}" class="text-rose-400 hover:text-rose-300 font-bold text-[11px]">✕</a>
+                            <form action="{{ route('cart.coupon.remove') }}" method="POST" class="inline">
+                                @csrf
+                                <button type="submit" class="text-rose-400 hover:text-rose-300 font-bold text-[11px] bg-transparent border-0 cursor-pointer" title="Remove coupon">✕</button>
+                            </form>
                         </div>
                     @else
                         <form action="{{ route('cart.coupon.apply') }}" method="POST" class="flex gap-2">
@@ -268,7 +272,13 @@
         const iconMap = { success: 'check-circle-fill', error: 'exclamation-circle-fill', warning: 'exclamation-triangle-fill' };
         const classMap = { success: 'alert-success', error: 'alert-error', warning: 'alert-warning' };
         inner.className = 'alert text-sm ' + (classMap[type] || 'alert-success');
-        inner.innerHTML = `<i class="alert-icon bi bi-${iconMap[type] || 'check-circle-fill'}"></i><p>${msg}</p>`;
+        inner.textContent = '';
+        const icon = document.createElement('i');
+        icon.className = 'alert-icon bi bi-' + (iconMap[type] || 'check-circle-fill');
+        const text = document.createElement('p');
+        text.textContent = msg;
+        inner.appendChild(icon);
+        inner.appendChild(text);
         toast.classList.remove('hidden');
         clearTimeout(toast._timer);
         toast._timer = setTimeout(() => toast.classList.add('hidden'), 3500);

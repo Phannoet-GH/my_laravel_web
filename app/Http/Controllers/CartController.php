@@ -28,8 +28,8 @@ class CartController extends Controller
         }
 
         $request->validate([
-            'product_id' => 'required|exists:products,id',
-            'quantity' => 'nullable|integer|min:1'
+            'product_id' => 'required|integer|exists:products,id',
+            'quantity' => 'nullable|integer|min:1|max:99'
         ]);
 
         $product = Product::findOrFail($request->product_id);
@@ -93,8 +93,8 @@ class CartController extends Controller
     public function update(Request $request)
     {
         $request->validate([
-            'product_id' => 'required|exists:products,id',
-            'quantity'   => 'required|integer|min:1'
+            'product_id' => 'required|integer|exists:products,id',
+            'quantity'   => 'required|integer|min:1|max:99'
         ]);
 
         $cart      = session()->get('cart', []);
@@ -123,7 +123,7 @@ class CartController extends Controller
 
     public function remove(Request $request)
     {
-        $request->validate(['product_id' => 'required']);
+        $request->validate(['product_id' => 'required|integer']);
 
         $cart      = session()->get('cart', []);
         $productId = $request->product_id;
@@ -142,7 +142,7 @@ class CartController extends Controller
     public function applyCoupon(Request $request)
     {
         $request->validate([
-            'coupon_code' => 'required|string'
+            'coupon_code' => 'required|string|max:30'
         ]);
 
         $code = strtoupper(trim($request->coupon_code));

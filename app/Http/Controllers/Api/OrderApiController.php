@@ -107,17 +107,17 @@ class OrderApiController extends Controller
         $user = $request->user();
 
         $validated = $request->validate([
-            'customer_name' => 'required|string|max:255',
-            'customer_email' => 'required|email|max:255',
-            'customer_phone' => 'nullable|string|max:50',
-            'shipping_address' => 'required|string|max:500',
+            'customer_name' => 'required|string|max:100',
+            'customer_email' => 'required|string|email|max:255',
+            'customer_phone' => 'nullable|string|max:30',
+            'shipping_address' => 'required|string|max:300',
             'city' => 'required|string|max:100',
             'postal_code' => 'required|string|max:20',
             'payment_method' => 'required|string|in:card,paypal,cod,bank_transfer',
-            'items' => 'required|array|min:1',
+            'items' => 'required|array|min:1|max:50',
             'items.*.product_id' => 'required|exists:products,id',
-            'items.*.quantity' => 'required|integer|min:1',
-            'coupon_code' => 'nullable|string',
+            'items.*.quantity' => 'required|integer|min:1|max:99',
+            'coupon_code' => 'nullable|string|max:30',
         ]);
 
         try {
@@ -155,7 +155,7 @@ class OrderApiController extends Controller
 
             // Coupon discount calculation (e.g. WELCOME10 gives 10% off)
             $discount = 0;
-            $couponCode = strtoupper($validated['coupon_code'] ?? '');
+            $couponCode = strtoupper(trim((string)($validated['coupon_code'] ?? '')));
             if ($couponCode === 'WELCOME10') {
                 $discount = round($subtotal * 0.10, 2);
             } elseif ($couponCode === 'SAVE20') {
@@ -170,12 +170,12 @@ class OrderApiController extends Controller
             $order = Order::create([
                 'user_id' => $user ? $user->id : null,
                 'order_number' => $orderNumber,
-                'customer_name' => $validated['customer_name'],
-                'customer_email' => strtolower($validated['customer_email']),
-                'customer_phone' => $validated['customer_phone'] ?? null,
-                'shipping_address' => $validated['shipping_address'],
-                'city' => $validated['city'],
-                'postal_code' => $validated['postal_code'],
+                'customer_name' => strip_tags(trim($validated['customer_name'])),
+                'customer_email' => strtolower(trim($validated['customer_email'])),
+                'customer_phone' => !empty($validated['customer_phone']) ? strip_tags(trim($validated['customer_phone'])) : null,
+                'shipping_address' => strip_tags(trim($validated['shipping_address'])),
+                'city' => strip_tags(trim($validated['city'])),
+                'postal_code' => strip_tags(trim($validated['postal_code'])),
                 'subtotal_amount' => $subtotal,
                 'discount_amount' => $discount,
                 'coupon_code' => $couponCode ?: null,
@@ -201,9 +201,10 @@ class OrderApiController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
+            \Illuminate\Support\Facades\Log::error('API Order processing error: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to process order: ' . $e->getMessage(),
+                'message' => 'Failed to process order. Please verify details and try again.',
             ], 500);
         }
     }
@@ -264,6 +265,13 @@ class OrderApiController extends Controller
         }
 
         $order->update(['status' => 'Cancelled']);
+
+        // Restore stock
+        foreach ($order->items as $item) {
+            if ($item->product_id) {
+                Product::where('id', $item->product_id)->increment('stock', $item->quantity);
+            }
+        }
 
         return response()->json([
             'success' => true,

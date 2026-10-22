@@ -42,10 +42,10 @@ class AdminController extends Controller
     public function storeProduct(Request $request)
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
+            'name' => 'required|string|max:150',
             'category_id' => 'required|exists:categories,id',
-            'tagline' => 'nullable|string|max:255',
-            'description' => 'required|string',
+            'tagline' => 'nullable|string|max:200',
+            'description' => 'required|string|max:5000',
             'price' => 'required|numeric|min:0',
             'sale_price' => 'nullable|numeric|min:0',
             'stock' => 'required|integer|min:0',
@@ -54,6 +54,8 @@ class AdminController extends Controller
             'is_trending' => 'nullable|boolean',
         ]);
 
+        $validated['name'] = strip_tags(trim($validated['name']));
+        $validated['tagline'] = !empty($validated['tagline']) ? strip_tags(trim($validated['tagline'])) : null;
         $validated['slug'] = Str::slug($validated['name']) . '-' . rand(100, 999);
         $validated['is_featured'] = $request->has('is_featured');
         $validated['is_trending'] = $request->has('is_trending');
@@ -70,16 +72,18 @@ class AdminController extends Controller
         $product = Product::findOrFail($id);
 
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
+            'name' => 'required|string|max:150',
             'category_id' => 'required|exists:categories,id',
-            'tagline' => 'nullable|string|max:255',
-            'description' => 'required|string',
+            'tagline' => 'nullable|string|max:200',
+            'description' => 'required|string|max:5000',
             'price' => 'required|numeric|min:0',
             'sale_price' => 'nullable|numeric|min:0',
             'stock' => 'required|integer|min:0',
             'image' => 'required|url',
         ]);
 
+        $validated['name'] = strip_tags(trim($validated['name']));
+        $validated['tagline'] = !empty($validated['tagline']) ? strip_tags(trim($validated['tagline'])) : null;
         $validated['is_featured'] = $request->has('is_featured');
         $validated['is_trending'] = $request->has('is_trending');
 

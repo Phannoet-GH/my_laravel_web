@@ -304,11 +304,31 @@
                     });
             }
 
+            function escapeHtml(str) {
+                if (str === null || str === undefined) return '';
+                return String(str)
+                    .replace(/&/g, '&amp;')
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;')
+                    .replace(/"/g, '&quot;')
+                    .replace(/'/g, '&#039;');
+            }
+
+            function sanitizeUrl(url) {
+                if (!url) return '';
+                const clean = String(url).trim();
+                if (clean.startsWith('http://') || clean.startsWith('https://') || clean.startsWith('/') || clean.startsWith('data:image/')) {
+                    return escapeHtml(clean);
+                }
+                return '';
+            }
+
             function updateDrawerUI(data) {
                 // Update Badge
                 if (badge) {
-                    badge.textContent = data.cart_count;
-                    if (data.cart_count > 0) {
+                    const count = parseInt(data.cart_count, 10) || 0;
+                    badge.textContent = count;
+                    if (count > 0) {
                         badge.classList.remove('hidden');
                     } else {
                         badge.classList.add('hidden');
@@ -316,7 +336,7 @@
                 }
 
                 // Update Subtotal
-                if (drawerSubtotal) drawerSubtotal.textContent = '$' + data.subtotal;
+                if (drawerSubtotal) drawerSubtotal.textContent = '$' + escapeHtml(data.subtotal);
 
                 // Update Items List
                 if (drawerItemsList) {
@@ -331,26 +351,35 @@
                         return;
                     }
 
-                    drawerItemsList.innerHTML = data.cart.map(item => `
-                        <div class="flex items-center gap-4 p-3 rounded-xl bg-gray-900/60 border border-gray-800">
-                            <img src="${item.image}" alt="${item.name}" class="w-16 h-16 object-cover rounded-lg bg-gray-800">
-                            <div class="flex-1 min-w-0">
-                                <h4 class="text-xs font-bold text-white truncate">${item.name}</h4>
-                                <p class="text-[11px] text-gray-400">$${parseFloat(item.price).toFixed(2)} &times; ${item.quantity}</p>
-                                <div class="flex items-center gap-2 mt-1">
-                                    <button type="button" onclick="updateCartQuantity(${item.id}, ${item.quantity - 1})" class="w-5 h-5 rounded bg-gray-800 hover:bg-gray-700 flex items-center justify-center text-xs text-gray-300">-</button>
-                                    <span class="text-xs font-bold text-gray-200">${item.quantity}</span>
-                                    <button type="button" onclick="updateCartQuantity(${item.id}, ${item.quantity + 1})" class="w-5 h-5 rounded bg-gray-800 hover:bg-gray-700 flex items-center justify-center text-xs text-gray-300">+</button>
+                    drawerItemsList.innerHTML = data.cart.map(item => {
+                        const safeName = escapeHtml(item.name);
+                        const safeImage = sanitizeUrl(item.image);
+                        const safeId = parseInt(item.id, 10) || 0;
+                        const safeQty = parseInt(item.quantity, 10) || 1;
+                        const safePrice = parseFloat(item.price) || 0;
+                        const lineTotal = (safePrice * safeQty).toFixed(2);
+
+                        return `
+                            <div class="flex items-center gap-4 p-3 rounded-xl bg-gray-900/60 border border-gray-800">
+                                <img src="${safeImage}" alt="${safeName}" class="w-16 h-16 object-cover rounded-lg bg-gray-800">
+                                <div class="flex-1 min-w-0">
+                                    <h4 class="text-xs font-bold text-white truncate">${safeName}</h4>
+                                    <p class="text-[11px] text-gray-400">$${safePrice.toFixed(2)} &times; ${safeQty}</p>
+                                    <div class="flex items-center gap-2 mt-1">
+                                        <button type="button" onclick="updateCartQuantity(${safeId}, ${safeQty - 1})" class="w-5 h-5 rounded bg-gray-800 hover:bg-gray-700 flex items-center justify-center text-xs text-gray-300">-</button>
+                                        <span class="text-xs font-bold text-gray-200">${safeQty}</span>
+                                        <button type="button" onclick="updateCartQuantity(${safeId}, ${safeQty + 1})" class="w-5 h-5 rounded bg-gray-800 hover:bg-gray-700 flex items-center justify-center text-xs text-gray-300">+</button>
+                                    </div>
+                                </div>
+                                <div class="text-right">
+                                    <span class="text-xs font-bold text-cyan-400 block">$${lineTotal}</span>
+                                    <button type="button" onclick="removeCartItem(${safeId})" class="text-gray-500 hover:text-rose-400 text-xs mt-1">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
                                 </div>
                             </div>
-                            <div class="text-right">
-                                <span class="text-xs font-bold text-cyan-400 block">$${(item.price * item.quantity).toFixed(2)}</span>
-                                <button type="button" onclick="removeCartItem(${item.id})" class="text-gray-500 hover:text-rose-400 text-xs mt-1">
-                                    <i class="bi bi-trash"></i>
-                                </button>
-                            </div>
-                        </div>
-                    `).join('');
+                        `;
+                    }).join('');
                 }
             }
 

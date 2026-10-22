@@ -15,10 +15,24 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias([
             'admin' => \App\Http\Middleware\AdminMiddleware::class,
+            'security.headers' => \App\Http\Middleware\SecurityHeadersMiddleware::class,
+            'payload.limit' => \App\Http\Middleware\PreventLargePayloadsMiddleware::class,
+            'sanitize' => \App\Http\Middleware\SanitizeInputsMiddleware::class,
         ]);
+
+        // Global security & DoS defense layers
+        $middleware->append([
+            \App\Http\Middleware\PreventLargePayloadsMiddleware::class,
+            \App\Http\Middleware\SecurityHeadersMiddleware::class,
+            \App\Http\Middleware\SanitizeInputsMiddleware::class,
+        ]);
+
+        // Default throttling for API routes
+        $middleware->throttleApi('api');
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(
             fn (Request $request) => $request->is('api/*') || $request->expectsJson(),
         );
     })->create();
+

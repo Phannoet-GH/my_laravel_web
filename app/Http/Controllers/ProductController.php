@@ -15,7 +15,7 @@ class ProductController extends Controller
 
         // Search
         if ($request->filled('q')) {
-            $searchTerm = $request->q;
+            $searchTerm = \Illuminate\Support\Str::substr(trim((string) $request->q), 0, 100);
             $query->where(function ($q) use ($searchTerm) {
                 $q->where('name', 'like', "%{$searchTerm}%")
                   ->orWhere('description', 'like', "%{$searchTerm}%")
@@ -25,17 +25,20 @@ class ProductController extends Controller
 
         // Category filter
         if ($request->filled('category')) {
-            $query->whereHas('category', function ($q) use ($request) {
-                $q->where('slug', $request->category);
+            $catSlug = \Illuminate\Support\Str::substr(trim((string) $request->category), 0, 100);
+            $query->whereHas('category', function ($q) use ($catSlug) {
+                $q->where('slug', $catSlug);
             });
         }
 
         // Price range
         if ($request->filled('min_price')) {
-            $query->where('price', '>=', (float)$request->min_price);
+            $minPrice = max(0, min(1000000, (float) $request->min_price));
+            $query->where('price', '>=', $minPrice);
         }
         if ($request->filled('max_price')) {
-            $query->where('price', '<=', (float)$request->max_price);
+            $maxPrice = max(0, min(1000000, (float) $request->max_price));
+            $query->where('price', '<=', $maxPrice);
         }
 
         // Sorting
@@ -80,13 +83,18 @@ class ProductController extends Controller
         $product = Product::findOrFail($id);
 
         $validated = $request->validate([
-            'author_name' => 'required|string|max:255',
+            'author_name' => 'required|string|max:100',
             'rating' => 'required|integer|min:1|max:5',
-            'headline' => 'required|string|max:255',
-            'comment' => 'required|string',
+            'headline' => 'required|string|max:150',
+            'comment' => 'required|string|max:2000',
         ]);
 
-        $product->reviews()->create($validated);
+        $product->reviews()->create([
+            'author_name' => strip_tags(trim($validated['author_name'])),
+            'rating' => $validated['rating'],
+            'headline' => strip_tags(trim($validated['headline'])),
+            'comment' => strip_tags(trim($validated['comment'])),
+        ]);
 
         // Update product average rating
         $avgRating = $product->reviews()->avg('rating');
