@@ -12,7 +12,9 @@ class AuthController extends Controller
     public function showRegisterForm()
     {
         if (Auth::check()) {
-            return redirect()->route('dashboard');
+            return Auth::user()->isAdmin()
+                ? redirect()->route('admin.dashboard')
+                : redirect()->route('home');
         }
         return view('auth.register');
     }
@@ -42,7 +44,7 @@ class AuthController extends Controller
         if (Auth::check()) {
             return Auth::user()->isAdmin()
                 ? redirect()->route('admin.dashboard')
-                : redirect()->route('dashboard');
+                : redirect()->route('home');
         }
         return view('auth.login');
     }
@@ -61,7 +63,7 @@ class AuthController extends Controller
                 return redirect()->route('admin.dashboard')->with('success', 'Welcome back, Admin! Redirected to Admin Dashboard.');
             }
 
-            return redirect()->intended(route('dashboard'))->with('success', 'Logged in successfully!');
+            return redirect()->route('home')->with('success', 'Logged in successfully! Welcome to SE Shop.');
         }
 
         return back()->withErrors([

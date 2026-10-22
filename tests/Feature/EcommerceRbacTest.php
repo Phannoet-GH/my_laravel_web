@@ -47,12 +47,12 @@ class EcommerceRbacTest extends TestCase
             'email' => 'john@example.com',
             'password' => 'password123',
         ]);
-        $loginRes->assertRedirect('/dashboard');
+        $loginRes->assertRedirect('/');
         $this->assertAuthenticatedAs($user);
 
-        $dashboardRes = $this->get('/dashboard');
-        $dashboardRes->assertStatus(200);
-        $dashboardRes->assertSee('Welcome back, John Doe!');
+        $homeRes = $this->get('/');
+        $homeRes->assertStatus(200);
+        $homeRes->assertSee('SE Shop');
     }
 
     public function test_customer_cannot_access_admin_dashboard(): void
