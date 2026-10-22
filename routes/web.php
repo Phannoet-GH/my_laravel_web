@@ -74,4 +74,12 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::put('/products/{id}', [AdminController::class, 'updateProduct'])->name('products.update');
     Route::delete('/products/{id}', [AdminController::class, 'destroyProduct'])->name('products.destroy');
     Route::patch('/orders/{id}/status', [AdminController::class, 'updateOrderStatus'])->name('orders.status');
+
+    // Registered User Management Routes
+    Route::post('/users', [AdminController::class, 'storeUser'])->name('users.store');
+    Route::put('/users/{id}', [AdminController::class, 'updateUser'])->name('users.update');
+    Route::patch('/users/{id}/role', [AdminController::class, 'updateUserRole'])->name('users.role');
+    Route::patch('/users/{id}/password', [AdminController::class, 'updateUserPassword'])->name('users.password');
+    Route::delete('/users/{id}', [AdminController::class, 'destroyUser'])->name('users.destroy');
+    Route::get('/users/{id}/details', [AdminController::class, 'getUserDetails'])->name('users.details');
 });

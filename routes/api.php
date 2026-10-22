@@ -56,5 +56,13 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::delete('/categories/{id}', [CategoryApiController::class, 'destroy']);
 
         Route::patch('/orders/{id}/status', [OrderApiController::class, 'updateStatus']);
+
+        // Admin User Management API Routes
+        Route::get('/users', [\App\Http\Controllers\Api\UserApiController::class, 'index']);
+        Route::post('/users', [\App\Http\Controllers\Api\UserApiController::class, 'store']);
+        Route::get('/users/{id}', [\App\Http\Controllers\Api\UserApiController::class, 'show']);
+        Route::put('/users/{id}', [\App\Http\Controllers\Api\UserApiController::class, 'update']);
+        Route::patch('/users/{id}/password', [\App\Http\Controllers\Api\UserApiController::class, 'updatePassword']);
+        Route::delete('/users/{id}', [\App\Http\Controllers\Api\UserApiController::class, 'destroy']);
     });
 });
