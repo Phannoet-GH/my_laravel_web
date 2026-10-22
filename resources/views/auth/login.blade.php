@@ -47,6 +47,17 @@
                 </div>
             @endif
 
+            {{-- Registration success notification --}}
+            @if(session('registered_email'))
+                <div class="p-4 rounded-xl bg-emerald-950/80 border border-emerald-500/40 text-emerald-300 flex items-start gap-3 text-xs shadow-lg animate-slide-in-up">
+                    <i class="bi bi-check-circle-fill text-emerald-400 text-lg flex-shrink-0 mt-0.5"></i>
+                    <div>
+                        <strong class="text-white font-bold block text-sm">Account registered successfully!</strong>
+                        <p class="text-emerald-200/80 mt-0.5">Please sign in with your email and password to access your account.</p>
+                    </div>
+                </div>
+            @endif
+
             {{-- Login Form --}}
             <form id="loginForm" action="{{ route('login') }}" method="POST" class="space-y-5">
                 @csrf
@@ -58,8 +69,9 @@
                             <i class="bi bi-envelope"></i>
                         </span>
                         <input id="email" name="email" type="email" required autocomplete="email"
-                            value="{{ old('email') }}"
+                            value="{{ old('email', session('registered_email')) }}"
                             placeholder="you@example.com"
+                            {{ !session('registered_email') ? 'autofocus' : '' }}
                             class="input-dark {{ $errors->has('email') ? 'border-rose-500/70 focus:border-rose-500' : '' }}">
                     </div>
                 </div>
@@ -72,6 +84,7 @@
                         </span>
                         <input id="password" name="password" type="password" required autocomplete="current-password"
                             placeholder="••••••••"
+                            {{ session('registered_email') ? 'autofocus' : '' }}
                             class="input-dark has-right-icon">
                         <button type="button" id="togglePwd" class="input-icon-right" title="Toggle Password Visibility">
                             <i class="bi bi-eye" id="eyeIcon"></i>

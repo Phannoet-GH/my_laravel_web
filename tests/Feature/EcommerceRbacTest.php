@@ -24,7 +24,7 @@ class EcommerceRbacTest extends TestCase
         ]);
     }
 
-    public function test_customer_can_register_and_access_dashboard(): void
+    public function test_customer_can_register_and_redirects_to_sign_in(): void
     {
         $response = $this->post('/register', [
             'name' => 'John Doe',
@@ -33,12 +33,22 @@ class EcommerceRbacTest extends TestCase
             'password_confirmation' => 'password123',
         ]);
 
-        $response->assertRedirect('/dashboard');
-        $this->assertAuthenticated();
+        $response->assertRedirect('/login');
+        $response->assertSessionHas('success');
+        $response->assertSessionHas('registered_email', 'john@example.com');
+        $this->assertGuest();
 
         $user = User::where('email', 'john@example.com')->first();
         $this->assertNotNull($user);
         $this->assertEquals('customer', $user->role);
+
+        // Sign in with the newly registered credentials
+        $loginRes = $this->post('/login', [
+            'email' => 'john@example.com',
+            'password' => 'password123',
+        ]);
+        $loginRes->assertRedirect('/dashboard');
+        $this->assertAuthenticatedAs($user);
 
         $dashboardRes = $this->get('/dashboard');
         $dashboardRes->assertStatus(200);

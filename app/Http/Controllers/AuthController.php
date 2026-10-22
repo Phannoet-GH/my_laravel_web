@@ -32,9 +32,9 @@ class AuthController extends Controller
             'role' => 'customer',
         ]);
 
-        Auth::login($user);
-
-        return redirect()->route('dashboard')->with('success', 'Account registered successfully! Welcome to SE Shop.');
+        return redirect()->route('login')
+            ->with('success', 'Registration successful! Please sign in with your email and password.')
+            ->with('registered_email', $user->email);
     }
 
     public function showLoginForm()
